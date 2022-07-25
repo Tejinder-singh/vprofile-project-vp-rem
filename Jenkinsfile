@@ -52,11 +52,12 @@ pipeline {
                 }
             }
         }
-	    stage ("deploy"){
+	    stage (deploy){
             steps {
             sshagent(['deploy_user']) {
            sh "scp -o StrictHostKeyChecking=no vprofile/target/vprofile-v2.war ec2-user@44.203.26.154:/opt/tomcat/webapps"
         }
+	    }
 	    }
 
         stage('CODE ANALYSIS with SONARQUBE') {
