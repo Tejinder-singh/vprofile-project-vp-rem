@@ -55,7 +55,7 @@ pipeline {
 	    stage (deploy){
             steps {
             sshagent(['deploy_user']) {
-           sh "scp -o StrictHostKeyChecking=no vprofile/target/vprofile-v2.war ec2-user@44.203.26.154:/opt/tomcat/webapps"
+           sh "scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/vprofile/target/vprofile-v2.war ec2-user@44.203.26.154:/opt/tomcat/webapps"
         }
 	    }
 	    }
