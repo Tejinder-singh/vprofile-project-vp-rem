@@ -6,7 +6,7 @@ pipeline {
         maven "maven3"
     }
 */	
-    environment {
+   /* environment {
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
         NEXUS_URL = "172.31.40.209:8081"
@@ -15,7 +15,7 @@ pipeline {
         NEXUS_CREDENTIAL_ID = "nexuslogin"
         ARTVERSION = "${env.BUILD_ID}"
     }
-	
+*/	
     stages{
         
         stage('BUILD'){
@@ -52,15 +52,14 @@ pipeline {
                 }
             }
         }
-
+	    
         stage('CODE ANALYSIS with SONARQUBE') {
-          
-		  environment {
-             scannerHome = tool 'sonarscanner4'
-          }
-
+		environment {
+                scannerHome = tool 'SonarQubeScanner'
+            }
+        
           steps {
-            withSonarQubeEnv('sonar-pro') {
+            withSonarQubeEnv('sonarqube-8.9.9') {
                sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=vprofile \
                    -Dsonar.projectName=vprofile-repo \
                    -Dsonar.projectVersion=1.0 \
@@ -76,8 +75,17 @@ pipeline {
             }
           }
         }
+	    
+	    stage (deploy){
+            steps {
+            sshagent(['deploy_user']) {
+           sh "scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/vprofile/target/vprofile-v2.war ec2-user@44.203.26.154:/opt/tomcat/webapps"
+        }
+	    }
+	    }
+	    
 
-        stage("Publish to Nexus Repository Manager") {
+       /* stage("Publish to Nexus Repository Manager") {
             steps {
                 script {
                     pom = readMavenPom file: "pom.xml";
@@ -112,10 +120,11 @@ pipeline {
                     }
                 }
             }
-        }
+       }
 
-
+*/
     }
 
 
 }
+
